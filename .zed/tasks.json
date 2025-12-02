@@ -1,0 +1,36 @@
+[
+  //these are very unfinished but its a proof of concept for how it will all look once done
+  {
+    "label": "Update/Prepare Raylib",
+    "command": "${ZED_WORKTREE_ROOT}/.scripts/updateRaylib.sh",
+    "cwd": "${ZED_WORKTREE_ROOT}"
+  },
+  {
+    "label": "Prepare Desktop",
+    "command": "${ZED_WORKTREE_ROOT}/.scripts/BuildDesktop.sh",
+    "cwd": "${ZED_WORKTREE_ROOT}"
+  },
+  {
+    "label": "Prepare Android (UNFINISHED)",
+    "command": "${ZED_WORKTREE_ROOT}/.scripts/BuildAndroid.sh",
+    "cwd": "${ZED_WORKTREE_ROOT}"
+  },
+  {
+    "label": "Prepare Web (UNFINISHED)",
+    "command": "${ZED_WORKTREE_ROOT}/.scripts/BuildWeb.sh",
+    "cwd": "${ZED_WORKTREE_ROOT}"
+  },
+  {
+    //the intention is to build all available platforms at once though i might have to wrap it through shell
+    "label": "Build Game (Release)",
+    "command": "make",
+    "cwd": "${ZED_WORKTREE_ROOT}",
+    "args": ["BUILD_MODE=RELEASE"]
+  },
+  {
+    "label": "Build Game (Debug)",
+    "command": "make",
+    "cwd": "${ZED_WORKTREE_ROOT}",
+    "args": ["BUILD_MODE=DEBUG"]
+  }
+]
