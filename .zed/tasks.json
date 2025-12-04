@@ -1,5 +1,5 @@
 [
-  //these are very unfinished but its a proof of concept for how it will all look once done
+  //these are very unfinished but its a proof of concept
   {
     "label": "Update/Prepare Raylib",
     "command": "${ZED_WORKTREE_ROOT}/.scripts/updateRaylib.sh",

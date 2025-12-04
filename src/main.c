@@ -36,7 +36,7 @@ int main()
     const int screenWidth = 800;
     const int screenHeight = 450;
 
-    InitWindow(screenWidth, screenHeight, "raylib - project_name");
+    InitWindow(screenWidth, screenHeight, "raylib - game template");
     SetWindowMonitor(0); //for some reason it goes to the highest number first, a GLFW bug it seems
     camera.position = (Vector3){ 3.0f, 3.0f, 2.0f };
     camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
@@ -47,7 +47,7 @@ int main()
 #if defined(PLATFORM_WEB)
     emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
 #else
-    SetTargetFPS(240);               // Set our game to run at 60 frames-per-second
+    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
     // Main game loop

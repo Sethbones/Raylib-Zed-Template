@@ -1,3 +1,5 @@
+// For more documentation on how to configure debug tasks,
+// see: https://zed.dev/docs/debugger
 [
   {
     "label": "Build and Run Desktop",
@@ -7,7 +9,29 @@
     "build": {
       "command": "make",
       "cwd": "${ZED_WORKTREE_ROOT}",
-      "args": ["BUILD_MODE=DEBUG"]
+      "args": ["BUILD_MODE=DEBUG", "PLATFORM=PLATFORM_DESKTOP"]
+    }
+  },
+  {
+    "label": "Build and Run Android (UNFINISHED)",
+    "adapter": "CodeLLDB",
+    "program": "${ZED_WORKTREE_ROOT}/build/game",
+    "request": "launch",
+    "build": {
+      "command": "make",
+      "cwd": "${ZED_WORKTREE_ROOT}",
+      "args": ["BUILD_MODE=DEBUG", "PLATFORM=PLATFORM_ANDROID"]
+    }
+  },
+  {
+    "label": "Build and Run Web (UNFINISHED)",
+    "adapter": "CodeLLDB",
+    "program": "${ZED_WORKTREE_ROOT}/build/game",
+    "request": "launch",
+    "build": {
+      "command": "make",
+      "cwd": "${ZED_WORKTREE_ROOT}",
+      "args": ["BUILD_MODE=DEBUG", "PLATFORM=PLATFORM_WEB"]
     }
   }
 ]

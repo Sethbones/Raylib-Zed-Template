@@ -113,11 +113,10 @@ SDL_INCLUDE_PATH      ?= $(RAYLIB_PLATFORM_PATH)/external/SDL2/include
 SDL_LIBRARY_PATH      ?= $(RAYLIB_PLATFORM_PATH)/external/SDL2/lib
 SDL_LIBRARIES         ?= -lSDL2 -lSDL2main
 #RGFW PATHS
-#same to RGFW, except RGFW is much more rare to find in any distro, you're on your own here, and i don't understand if RGFW is a library or is it a pure header?
+#RGFW is basically a header file on steroids
 RGFW_INCLUDE_PATH      ?= $(RAYLIB_PLATFORM_PATH)/external/RGFW/include
-RGFW_LIBRARY_PATH      ?= $(RAYLIB_PLATFORM_PATH)/external/RGFW/lib
 #there is a librgfw.a but i don't know what's in it
-RGFW_LIBRARIES         ?= -lrgfw
+RGFW_LIBRARIES         ?= -lRGFW
 
 
 # Determine PLATFORM_OS in case PLATFORM_DESKTOP selected
@@ -264,7 +263,7 @@ ifeq ($(PLATFORM),PLATFORM_DESKTOP)
     ifeq ($(TARGET_BACKEND),BACKEND_SDL)
 		INCLUDE_PATHS += -I$(SDL_INCLUDE_PATH)
     endif
-    ifeq ($(TARGET_BACKEND),RGFW)
+    ifeq ($(TARGET_BACKEND),BACKEND_RGFW)
 		INCLUDE_PATHS += -I$(RGFW_INCLUDE_PATH)
     endif
 
@@ -398,8 +397,12 @@ ifeq ($(PLATFORM),PLATFORM_DESKTOP)
     ifeq ($(TARGET_BACKEND),BACKEND_SDL)
 	LDLIBS += -lSDL3
     endif
+#RGFW is not a library, its a giant header file
     ifeq ($(TARGET_BACKEND),BACKEND_RGFW)
-		LDLIBS += -lrgfw
+# 		interesting, so RGFW requires -lX11 and -lXrandr
+		LDLIBS += -lX11 -lXrandr
+		#it can technically take more, but it also doesn't use most of them, i'm down to being wrong though
+# 		LDLIBS = -lGL -lX11 -lXrandr -lXinerama -lXi -lXcursor -lm -lpthread -ldl -lrt
     endif
 endif
 
