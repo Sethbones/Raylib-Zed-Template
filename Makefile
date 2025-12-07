@@ -23,9 +23,9 @@ include .scripts/config.sh #applies config written by BuildDesktop.sh
 #------------------------------------------------------------------------------------------------
 # Define target platform: PLATFORM_DESKTOP, PLATFORM_WEB, PLATFORM_DRM, PLATFORM_ANDROID_BROKEN
 PLATFORM              ?= PLATFORM_DESKTOP
-# Define the target backend: BACKEND_GLFW, BACKEND_SDL, BACKEND_RGFW
+# NOTE Desktop only: Define the target backend: BACKEND_GLFW, BACKEND_SDL, BACKEND_RGFW
 TARGET_BACKEND       ?= BACKEND_GLFW
-#currently not used but | 1.1, 2.1, 3.3, 4.3, SOFTWARE
+#NOTE Desktop only: currently not used but | 1.1, 2.1, 3.3, 4.3, SOFTWARE
 TARGET_OPENGL_VERSION?= 3.3
 #the name of the folder given by the PLATFORM
 PLATFORM_NAME         ?= desktop
@@ -47,7 +47,7 @@ endif
 # Define project variables
 #name of the output executable
 PROJECT_NAME          ?= game
-#not used|to be removed
+#not used|to be removed | any idea i have basically results in output game files to the directory of the version number, as in build/1.0/desktop
 PROJECT_VERSION       ?= 1.0
 #the directory from which the build from, usually the src folder, which in this case is the current directory
 PROJECT_BUILD_PATH    ?= build
@@ -76,7 +76,7 @@ COMPILER_PATH         ?= C:\raylib\w64devkit\bin
 BUILD_MODE            ?= DEBUG
 
 # PLATFORM_WEB: Default properties
-#i'll be honest with you, i have no idea with any of these do
+#i'll be honest with you, i have no idea with most of these do
 BUILD_WEB_ASYNCIFY    ?= FALSE
 #this needs to be routed into the raylib src
 BUILD_WEB_SHELL       ?= raylib/src/minshell.html
@@ -85,6 +85,9 @@ BUILD_WEB_STACK_SIZE  ?= 1MB
 BUILD_WEB_ASYNCIFY_STACK_SIZE ?= 1048576
 BUILD_WEB_RESOURCES   ?= FALSE
 BUILD_WEB_RESOURCES_PATH  ?= resources
+#you don't really have a reason to not use the git version unless the git version is unusably broken from a bad commit
+EMSCRIPTEN_USE_GIT       ?= FALSE
+EMSCRIPTEN_GIT_PATH      ?= $(RAYLIB_PLATFORM_PATH)/external/emscripten
 
 # PLATFORM_ANDROID: Default properties
 # probably meant for windows too
@@ -179,8 +182,12 @@ ifeq ($(PLATFORM),PLATFORM_WEB)
     # HTML5 emscripten compiler
     # WARNING: To compile to HTML5, code must be redesigned
     # to use emscripten.h and emscripten_set_main_loop()
-    # emcc is not exposed to the linux system with the emscripten arch package, requiring a direct approach
-    CC = /usr/lib/emscripten/emcc
+    ifeq ($(EMSCRIPTEN_USE_GIT), TRUE)
+	CC = $(EMSCRIPTEN_GIT_PATH)/emcc
+    else
+    #it does get exposed to linux with the package, but only after a computer restart because it relies on a profile.d setup file
+	CC = emcc
+    endif
 endif
 ifeq ($(PLATFORM),PLATFORM_DRM)
     ifeq ($(USE_RPI_CROSS_COMPILER),TRUE)
@@ -443,26 +450,57 @@ $(PROJECT_NAME): $(OBJS)
 
 # Clean everything
 clean:
-ifeq ($(PLATFORM),PLATFORM_DESKTOP)
-    ifeq ($(PLATFORM_OS),WINDOWS)
+#make it OS centric instead of platform centric because there's really no point in doing otherwise
+ifeq ($(PLATFORM_OS),WINDOWS)
 		del *.o *.exe /s
-    endif
-    ifeq ($(PLATFORM_OS),LINUX)
-		find src -type f -name *.o -delete
-		find build -type f -executable -delete
-    endif
-    ifeq ($(PLATFORM_OS),OSX)
-		rm -f *.o external/*.o $(PROJECT_NAME)
-    endif
 endif
+ifeq ($(PLATFORM_OS),LINUX)
+	#reminder to figure out why .o goes to src and not build
+	find src -type f -name *.o -delete
+	find build -type f -executable -delete
+	find build -type f -name $(PROJECT_NAME).o -delete
+	find build -type f -name $(PROJECT_NAME).html -delete
+	find build -type f -name $(PROJECT_NAME).js -delete
+	find build -type f -name $(PROJECT_NAME).wasm -delete
+endif
+ifeq ($(PLATFORM_OS),OSX)
+	rm -f *.o external/*.o $(PROJECT_NAME)
+endif
+#with the exception of this
 ifeq ($(PLATFORM),PLATFORM_DRM)
 	find . -type f -executable -delete
 	rm -fv *.o
 endif
-ifeq ($(PLATFORM),PLATFORM_WEB)
-# 	del *.o *.html *.js #this doesn't check compile platform right now
-	#find . -type f -executable -delete
-	rm -fv $(PROJECT_NAME).o $(PROJECT_NAME).html $(PROJECT_NAME).js $(PROJECT_NAME).wasm
+#just noticed the lack of a BSD check
 
-endif
+# ifeq ($(PLATFORM),PLATFORM_DESKTOP)
+#     ifeq ($(PLATFORM_OS),WINDOWS)
+# 		del *.o *.exe /s
+#     endif
+#     ifeq ($(PLATFORM_OS),LINUX)
+# 		find src -type f -name *.o -delete
+# 		find build -type f -executable -delete
+# 		find build -type f -name $(PROJECT_NAME).o -delete
+# 		find build -type f -name $(PROJECT_NAME).html -delete
+# 		find build -type f -name $(PROJECT_NAME).js -delete
+# 		find build -type f -name $(PROJECT_NAME).wasm -delete
+#     endif
+#     ifeq ($(PLATFORM_OS),OSX)
+# 		rm -f *.o external/*.o $(PROJECT_NAME)
+#     endif
+# endif
+# ifeq ($(PLATFORM),PLATFORM_DRM)
+# 	find . -type f -executable -delete
+# 	rm -fv *.o
+# endif
+# ifeq ($(PLATFORM),PLATFORM_WEB)
+# # 	del *.o *.html *.js #this doesn't check compile platform right now
+# 	#find . -type f -executable -delete
+# 	find build -type f -name $(PROJECT_NAME).o -delete
+# 	find build -type f -name $(PROJECT_NAME).html -delete
+# 	find build -type f -name $(PROJECT_NAME).js -delete
+# 	find build -type f -name $(PROJECT_NAME).wasm -delete
+# 	#rm -fv $(PROJECT_NAME).o $(PROJECT_NAME).html $(PROJECT_NAME).js $(PROJECT_NAME).wasm
+#
+# endif
 	@echo Cleaning done

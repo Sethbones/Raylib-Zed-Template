@@ -46,6 +46,10 @@ if [ "$PLAT" != 5 ]; then
             ;;
     esac
 fi
+# echo "SDL Version to use: "
+# read -p "1)SDL1 (UNSUPPORTED?) 2)SDL2 3)SDL3 : " SDL_VER
+#case "$SDL_VER" in
+#esac
 
 cd raylib
 mkdir --parents build

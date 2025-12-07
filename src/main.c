@@ -38,6 +38,7 @@ int main()
 
     InitWindow(screenWidth, screenHeight, "raylib - game template");
     SetWindowMonitor(0); //for some reason it goes to the highest number first, a GLFW bug it seems
+
     camera.position = (Vector3){ 3.0f, 3.0f, 2.0f };
     camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
@@ -45,7 +46,7 @@ int main()
     camera.projection = CAMERA_PERSPECTIVE;
 
 #if defined(PLATFORM_WEB)
-    emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
+    emscripten_set_main_loop(UpdateDrawFrame, 60, 1); //raylib would tell you to set the frame rate to 0 so that it will get frame rate natively, don't unless you want a ton of jitter, needs to be investigated
 #else
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
