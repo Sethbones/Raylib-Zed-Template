@@ -4,6 +4,10 @@ this is a collection of scripts all built to make using Raylib with the Zed Code
 such as allowing easy updating of raylib, and easy changing of backends
 all of which accessible by F4 and F5
 
+### Important Note
+currently this only works on Linux, this why i'm using, so Windows is not currently supported for this
+in the future i might consider porting the scripts to python instead to have something universal
+
 ### Features
  - Updating Raylib to the latest git version at the push of a button
  - Preparing Desktop Compilation with an interactive script
