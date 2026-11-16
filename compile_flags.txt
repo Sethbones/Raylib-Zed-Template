@@ -1,1 +1,3 @@
--I./raylib/src
+-I.
+-Iplatform/desktop/include
+-I./src

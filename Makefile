@@ -56,6 +56,9 @@ PROJECT_BUILD_PATH    ?= build
 #check for all files in the src directory
 PROJECT_SOURCE_FILES ?= $(shell find src -type f -name '*.c')
 
+PROJECT_INCLUDE_FLAGS_FILE ?= compile_flags.txt
+
+
 # Define paths libraries, the source directory, and the includes
 #the path from where to get the the platform libaries from
 RAYLIB_PLATFORM_PATH  ?= platform
@@ -253,7 +256,7 @@ endif
 # Define include paths for required headers: INCLUDE_PATHS
 #------------------------------------------------------------------------------------------------
 # NOTE: Several external required libraries (stb and others)
-INCLUDE_PATHS += -I. -I$(RAYLIB_INCLUDE_PATH)
+INCLUDE_PATHS += -I. -I$(RAYLIB_INCLUDE_PATH) -I./src
 # NOTE: this is only for external libraries, as it will check for usr/include first
 
 # Define additional directories containing required header files
@@ -437,7 +440,17 @@ OBJS = $(patsubst %.c, %.o, $(PROJECT_SOURCE_FILES))
 #------------------------------------------------------------------------------------------------
 # Default target entry
 all:
+#create the build directory, cause i just realized the folder gets deleted on commit
+	find src -type f -name *.o -delete
+	find build -type f -executable -delete
+	find build -type f -name $(PROJECT_NAME).o -delete
+	find build -type f -name $(PROJECT_NAME).html -delete
+	find build -type f -name $(PROJECT_NAME).js -delete
+	find build -type f -name $(PROJECT_NAME).wasm -delete
+	mkdir -p build
+	$(shell printf '%s\n' $(INCLUDE_PATHS) > $(PROJECT_INCLUDE_FLAGS_FILE)) #printf is weird, its like echo but on crack
 	$(MAKE) $(PROJECT_NAME)
+
 
 # Project target defined by PROJECT_NAME
 $(PROJECT_NAME): $(OBJS)
