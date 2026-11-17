@@ -11,7 +11,7 @@ case "$EMSCR" in
             mkdir --parents build
             cd build
             emcmake cmake -DBUILD_SHARED_LIBS=OFF -DPLATFORM=Web -DOPENGL_VERSION=OFF -DBUILD_EXAMPLES=OFF ..
-            make
+            emmake make
             mkdir --parents ../../platform/web/lib
             mv raylib/libraylib.a ../../platform/web/lib
             mkdir --parents ../../platform/web/include
@@ -53,7 +53,7 @@ case "$EMSCR" in
         mkdir --parents build
         cd build
         ../../platform/external/emscripten/emcmake.py cmake -DBUILD_SHARED_LIBS=OFF -DPLATFORM=Web -DOPENGL_VERSION=OFF -DBUILD_EXAMPLES=OFF ..
-        make
+        ../../platform/external/emscripten/emmake.py make
         mkdir --parents ../../platform/web/lib
         mv raylib/libraylib.a ../../platform/web/lib
         mkdir --parents ../../platform/web/include

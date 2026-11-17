@@ -17,8 +17,14 @@
   },
   {
     "label": "Prepare Web",
-    "command": "${ZED_WORKTREE_ROOT}/.scripts/BuildWeb.sh",
+    "command": "${ZED_WORKTREE_ROOT}/.scripts/PrepareWeb.sh",
     "cwd": "${ZED_WORKTREE_ROOT}"
+  },
+  {
+    "label": "Build Web",
+    "command": "make",
+    "cwd": "${ZED_WORKTREE_ROOT}",
+    "args": ["BUILD_MODE=RELEASE", "PLATFORM=PLATFORM_WEB"]
   },
   {
     "label": "Start Web Server",
@@ -59,5 +65,13 @@
     "command": "make",
     "cwd": "${ZED_WORKTREE_ROOT}",
     "args": ["BUILD_MODE=DEBUG"]
+  },
+  {
+    //the intention is to build all available platforms at once though i might have to wrap it through shell
+    //note PLATFORM=WINDOWS is not technically a valid argument, so it does nothing
+    "label": "Build Game (Windows)",
+    "command": "make",
+    "cwd": "${ZED_WORKTREE_ROOT}",
+    "args": ["BUILD_MODE=RELEASE", "PLATFORM=WINDOWS"]
   }
 ]

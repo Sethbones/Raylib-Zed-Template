@@ -291,7 +291,7 @@ LDFLAGS = -L. -L$(RAYLIB_LIB_PATH)
 ifeq ($(PLATFORM),PLATFORM_DESKTOP)
     ifeq ($(PLATFORM_OS),WINDOWS)
         # NOTE: The resource .rc file contains windows executable icon and properties
-        LDFLAGS += $(PROJECT_NAME).rc.data
+        LDFLAGS += $(RAYLIB_PLATFORM_PATH)/$(PROJECT_NAME).rc.data
         # -Wl,--subsystem,windows hides the console window
         ifeq ($(BUILD_MODE), RELEASE)
             LDFLAGS += -Wl,--subsystem,windows
@@ -451,10 +451,13 @@ all:
 	$(shell printf '%s\n' $(INCLUDE_PATHS) > $(PROJECT_INCLUDE_FLAGS_FILE)) #printf is weird, its like echo but on crack
 	$(MAKE) $(PROJECT_NAME)
 
-
 # Project target defined by PROJECT_NAME
 $(PROJECT_NAME): $(OBJS)
 	$(CC) -o $(PROJECT_BUILD_PATH)/$(PROJECT_NAME)$(EXT) $(OBJS) $(CFLAGS) $(INCLUDE_PATHS) $(LDFLAGS) $(LDLIBS) -D$(PLATFORM)
+	cp -r resources build/resources
+ifeq ($(PLATFORM),PLATFORM_WEB)
+	mv build/$(PROJECT_NAME).html build/index.html
+endif
 
 # Compile source files
 # NOTE: This pattern will compile every module defined on $(OBJS)
@@ -484,7 +487,54 @@ ifeq ($(PLATFORM),PLATFORM_DRM)
 	find . -type f -executable -delete
 	rm -fv *.o
 endif
-#just noticed the lack of a BSD check
+# just noticed the lack of a BSD check
+ifeq ($(PLATFORM),PLATFORM_WEB)
+	#find . -type f -executable -delete
+	find src -type f -name *.o -delete
+	find build -type f -executable -delete
+	find build -type f -name $(PROJECT_NAME).o -delete
+	find build -type f -name $(PROJECT_NAME).html -delete
+	find build -type f -name $(PROJECT_NAME).js -delete
+	find build -type f -name $(PROJECT_NAME).wasm -delete
+	#rm -fv $(PROJECT_NAME).o $(PROJECT_NAME).html $(PROJECT_NAME).js $(PROJECT_NAME).wasm
+endif
+
+.ONESHELL:
+prep:
+	#note, this preps windows, linux, and web at the same time
+	git clone --branch 6.0 --depth 1 https://github.com/raysan5/raylib.git
+	cd raylib
+	#Desktop
+	mkdir --parents build
+	cd build
+	cmake -DBUILD_SHARED_LIBS=OFF -DPLATFORM=Desktop -DBUILD_EXAMPLES=OFF ..
+ifeq ($(PLATFORM_OS),WINDOWS)
+		ninja
+		windres $(PROJECT_NAME).rc -O coff -o $(PROJECT_NAME).rc.data
+endif
+ifeq ($(PLATFORM_OS),LINUX)
+		make
+endif
+	mkdir --parents ../../platform/desktop/lib
+	mv raylib/libraylib.a ../../platform/desktop/lib
+	mkdir --parents ../../platform/desktop/include
+	mv raylib/include/* ../../platform/desktop/include
+	cd ..
+	find . -type d -name "build" -exec rm -rf {} +
+ifeq ($(PLATFORM_OS),WINDOWS)
+	cd ../src
+	windres $(PROJECT_NAME).rc -O coff -o $(RAYLIB_PLATFORM_PATH)/$(PROJECT_NAME).rc.data
+endif
+# 	#Web
+# 	mkdir --parents build
+# 	cd build
+# 	emcmake cmake -DBUILD_SHARED_LIBS=OFF -DPLATFORM=Web -DBUILD_EXAMPLES=OFF ..
+# 	emmake make
+# 	mkdir --parents ../../platform/web/lib
+# 	mv raylib/libraylib.a ../../platform/web/lib
+# 	mkdir --parents ../../platform/web/include
+# 	mv raylib/include/* ../../platform/web/include
+# 	cd ..
 
 # ifeq ($(PLATFORM),PLATFORM_DESKTOP)
 #     ifeq ($(PLATFORM_OS),WINDOWS)
